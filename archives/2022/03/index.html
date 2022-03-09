@@ -28,7 +28,7 @@
 
   
     
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1445822_r673sha78lq.css">
+<link rel="stylesheet" href="https://at.alicdn.com/t/font_1445822_p6ry5n7lrr.css">
 
   
 
@@ -60,10 +60,17 @@
       isHome: false,
       fancybox: true,
       pjax: false,
+      loading: {
+        gif: '/images/theme/loading.gif',
+        lottie: ''
+      },
       lazyload: {
         enable: true,
         only_post: 'false',
-        loading: '[object Object]'
+        loading: {
+          gif: '/images/theme/loading.gif',
+          lottie: ''
+        }
       },
       donate: {
         enable: true,
@@ -127,7 +134,7 @@
 <meta name="generator" content="Hexo 6.0.0"></head>
 
 <body class="lock-screen">
-  <div class="loading"></div>
+  <div class="loading" id="loading"></div>
   
     
 
@@ -184,11 +191,17 @@
   <section class="archive">
     <div class="archive-container">
       <div class="archive-post">
-        <h3 class="archive-total">归档: 1 篇</h3>
+        <h3 class="archive-total">归档: 2 篇</h3>
         
         
           
             <h3 class="archive-year">2022 年</h3>
+          
+          <div class="archive-item">
+            <a class="archive-date" href="/2022/03/09/%E6%BA%AF%E6%BA%90%E5%A4%A7%E6%B3%95%E5%A5%BD/">March 09</a>
+            <a class="archive-title" href="/2022/03/09/%E6%BA%AF%E6%BA%90%E5%A4%A7%E6%B3%95%E5%A5%BD/"></a>
+          </div>
+        
           
           <div class="archive-item">
             <a class="archive-date" href="/2022/03/09/hello-world/">March 09</a>
@@ -248,6 +261,7 @@
   </div>
   
   
+  
   <div class="fab fab-up">
     <i class="iconfont iconcaret-up"></i>
   </div>
@@ -261,7 +275,9 @@
   
 </body>
 
-<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
 
 
 
