@@ -1,0 +1,473 @@
+
+
+<!DOCTYPE html>
+<html lang="zh" color-mode=light>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>一文读懂svchost 被黑客“玩坏”的神秘进程 - 春风十里</title>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="google" content="notranslate" />
+  <meta name="keywords" content="应急响应">
+  <meta name="description" content="原始发布链接：https://mp.weixin.qq...">
+  <meta name="author" content="K1ng">
+  <link rel="icon" href="/images/icons/favicon-16x16.png" type="image/png" sizes="16x16">
+  <link rel="icon" href="/images/icons/favicon-32x32.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="/images/icons/apple-touch-icon.png" sizes="180x180">
+  <meta rel="mask-icon" href="/images/icons/stun-logo.svg" color="#333333">
+  
+    <meta rel="msapplication-TileImage" content="/images/icons/favicon-144x144.png">
+    <meta rel="msapplication-TileColor" content="#000000">
+  
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+    
+<link rel="stylesheet" href="https://at.alicdn.com/t/font_1445822_p6ry5n7lrr.css">
+
+  
+
+  
+    
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css">
+
+  
+
+  
+    
+      
+        
+        
+<link rel="stylesheet" href="https://cdn.bootcss.com/highlight.js/9.18.1/styles/xcode.min.css" name="highlight-style" mode="light">
+
+      
+        
+        
+<link rel="stylesheet" href="https://cdn.bootcss.com/highlight.js/9.18.1/styles/solarized-dark.min.css" name="highlight-style" mode="dark">
+
+      
+  
+
+  <script>
+    var CONFIG = window.CONFIG || {};
+    var ZHAOO = window.ZHAOO || {};
+    CONFIG = {
+      isHome: false,
+      fancybox: true,
+      pjax: false,
+      loading: {
+        gif: '/images/theme/loading.gif',
+        lottie: ''
+      },
+      lazyload: {
+        enable: true,
+        only_post: 'false',
+        loading: {
+          gif: '/images/theme/loading.gif',
+          lottie: ''
+        }
+      },
+      donate: {
+        enable: true,
+        alipay: 'https://pic.izhaoo.com/alipay.jpg',
+        wechat: 'https://pic.izhaoo.com/wechat.jpg'
+      },
+      galleries: {
+        enable: true
+      },
+      fab: {
+        enable: true,
+        always_show: false
+      },
+      carrier: {
+        enable: true
+      },
+      daovoice: {
+        enable: false
+      },
+      preview: {
+        background: {
+          default: '',
+          api: ''
+        },
+        motto: {
+          default: '我在开了灯的床头下，想问问自己的心啊。',
+          typing: true,
+          api: 'https://v2.jinrishici.com/one.json',
+          data_contents: '["data","content"]'
+        },
+      },
+      qrcode: {
+        enable: true,
+        type: 'url',
+        image: 'https://pic.izhaoo.com/weapp-code.jpg',
+      },
+      toc: {
+        enable: true
+      },
+      scrollbar: {
+        type: 'default'
+      },
+      notification: {
+        enable: false,
+        delay: 4500,
+        list: '',
+        page_white_list: '',
+        page_black_list: ''
+      },
+      search: {
+        enable: false,
+        path: ''
+      }
+    }
+  </script>
+
+  
+
+  
+
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+<body class="lock-screen">
+  <div class="loading" id="loading"></div>
+  
+    
+
+
+  <nav class="navbar">
+    <div class="left">
+      
+        <i class="iconfont iconhome j-navbar-back-home"></i>
+      
+      
+        <i class="iconfont iconqrcode j-navbar-qrcode"></i>
+      
+      
+        <i class="iconfont iconmoono" id="color-toggle" color-toggle="light"></i>
+      
+      
+    </div>
+    <div class="center">一文读懂svchost 被黑客“玩坏”的神秘进程</div>
+    <div class="right">
+      <i class="iconfont iconmenu j-navbar-menu"></i>
+    </div>
+    
+      <div id="qrcode-navbar"></div>
+    
+  </nav>
+
+  
+  
+
+<nav class="menu">
+  <div class="menu-container">
+    <div class="menu-close">
+      <i class="iconfont iconbaseline-close-px"></i>
+    </div>
+    <ul class="menu-content"><li class="menu-item">
+        <a href="/ " class="underline "> 首页</a>
+      </li><li class="menu-item">
+        <a href="/galleries/ " class="underline "> 生活</a>
+      </li><li class="menu-item">
+        <a href="/archives/ " class="underline "> 归档</a>
+      </li><li class="menu-item">
+        <a href="/tags/ " class="underline "> 标签</a>
+      </li><li class="menu-item">
+        <a href="/categories/ " class="underline "> 分类</a>
+      </li><li class="menu-item">
+        <a href="/about/ " class="underline "> 关于</a>
+      </li></ul>
+    
+      <div class="menu-copyright"><p>Powered by <a target="_blank" href="https://hexo.io">Hexo</a>  |  Theme - <a target="_blank" href="https://github.com/izhaoo/hexo-theme-zhaoo">zhaoo</a></p></div>
+    
+  </div>
+</nav>
+  <main id="main">
+  <div class="article-wrap">
+    <div class="row container">
+      <div class="col-xl-3"></div>
+      <div class="col-xl-6"><article class="article">
+  <div class="wrap">
+    <section class="head">
+  <img   class="lazyload" data-original="/images/banner/earth.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  draggable="false">
+  <div class="head-mask">
+    <h1 class="head-title">一文读懂svchost 被黑客“玩坏”的神秘进程</h1>
+    <div class="head-info">
+      <span class="post-info-item"><i class="iconfont iconcalendar"></i>May 20, 2022</span>
+      
+      <span class="post-info-item"><i class="iconfont iconfont-size"></i>8146</span>
+    </div>
+  </div>
+</section>
+    <section class="main">
+      <section class="content">
+        
+        <p>原始发布链接：<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/rGlX9fui7IqL8_Ia4B229Q">https://mp.weixin.qq.com/s/rGlX9fui7IqL8_Ia4B229Q</a></p>
+<p>+++</p>
+<p>最近客户应急需求有点多，于是就给刚学应急三天半的练习生甩了个练手的机会，屁颠屁颠去排查了～<br>————————- 2000 YEARS LATER ————————–<br><img   class="lazyload" data-original="https://cdn.nlark.com/yuque/0/2022/png/2316597/1650779816262-b049adb3-24bf-4a8e-b12d-5a2e938d3f11.png#crop=0&crop=0&crop=1&crop=1&height=179&id=EHmsZ&originHeight=1980&originWidth=1986&originalType=binary&ratio=1&rotation=0&showTitle=false&status=done&style=none&title=&width=180" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" ><br>“什么进程？”<br>“好像是叫 <strong>svchost.exe</strong>，让客户直接结束这个进程是不是就可以了？”<br><img   class="lazyload" data-original="https://cdn.nlark.com/yuque/0/2022/png/2316597/1650779818305-d03717f7-02e5-4de7-8b64-405327cd21bf.png#crop=0&crop=0&crop=1&crop=1&height=173&id=W1an7&originHeight=200&originWidth=196&originalType=binary&ratio=1&rotation=0&showTitle=false&status=done&style=none&title=&width=170" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" ><br>“你确定？是哪个文件夹下的？”<br>“system32 目录下的～”<br>“手下留情，千万别结束，万一客户系统崩了咱可担不起啊！”<br>对于很多同学来说，svchost.exe 进程简直就像蒙娜丽莎的微笑一样神秘，说不清道不明，今天，师傅我就带你们揭一揭它的神秘面纱，看看它到底是个什么玩意。<br><img   class="lazyload" data-original="https://cdn.nlark.com/yuque/0/2022/png/2316597/1650779819195-abf6e5a0-11ae-494e-acd4-bbd69828e11d.png#crop=0&crop=0&crop=1&crop=1&height=346&id=nSJWe&originHeight=756&originWidth=571&originalType=binary&ratio=1&rotation=0&showTitle=false&status=done&style=none&title=&width=261" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" ></p>
+<h1 id="一、基础概念介绍"><a href="#一、基础概念介绍" class="headerlink" title="一、基础概念介绍"></a><strong>一、基础概念介绍</strong></h1><h2 id="服务"><a href="#服务" class="headerlink" title="服务"></a><strong>服务</strong></h2><p>首先，我们来了解下什么是服务。在系统启动后，会有一个 services.exe 进程被启动，这个进程就是系统的<strong>服务控制管理器（SCM）</strong>，由它启动的进程就是我们所说的服务。我们可以通过 ProcessExplorer 发现，所有的 svchost.exe 的父进程都是 Services.exe。<br>也就是说，<strong>服务其实就是一组特殊的进程</strong>，这类进程的启动和运行完全不需要用户干预，会随着系统的启动而自动开始工作，为系统运行提供基础功能，比如网络服务、磁盘、键盘、鼠标等硬件管理服务。<br><img   class="lazyload" data-original="https://cdn.nlark.com/yuque/0/2022/png/2316597/1650779820471-e2da0fc1-c59e-44d6-83b3-69662e2ba890.png#crop=0&crop=0&crop=1&crop=1&id=dCJOZ&originHeight=1514&originWidth=2452&originalType=binary&ratio=1&rotation=0&showTitle=false&status=done&style=none&title=" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" ></p>
+<h2 id="Svchost-exe"><a href="#Svchost-exe" class="headerlink" title="Svchost.exe"></a><strong>Svchost.exe</strong></h2><p><strong>微软官方解释</strong>：svchost.exe 是从动态链接库 (DLL) 中运行的服务的通用主机进程名称。<br>svchost.exe 是一个系统共享进程，我们可以把他理解为一个宿主或者容器，本身没有任何服务功能，Windows 操作系统将大部分的服务封装在了一个个 DLL 动态链接库中，想要启动哪个服务，就把服务所需的 dll 交给 svchost.exe，让 svchost 统一去加载启动就可以，这就是我们在查看进程时，会发现密密麻麻一大堆 svchost.exe 进程的原因。<br>打开 Windows 任务管理器，我们看到的一堆名称为“服务主机”的进程，大部分都是 svchost.exe 启动的服务进程。当然，凡事都有例外，个别服务是通过直接注册可执行文件来实现，并不会通过 svchost.exe 这类进程调用。<br><img   class="lazyload" data-original="https://cdn.nlark.com/yuque/0/2022/png/2316597/1650779821489-abfc12bd-25a3-4476-b923-5944559c0fb3.png#crop=0&crop=0&crop=1&crop=1&id=EDYij&originHeight=1878&originWidth=3318&originalType=binary&ratio=1&rotation=0&showTitle=false&status=done&style=none&title=" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" ><br>这里也需要注意下不同版本的系统 svchost.exe 进程的数量也是有区别的：</p>
+<ul>
+<li><strong>Win 2000</strong>：最少有 2 个，一个是 RPCSS（Remote Procedure Call）服务进程，另外一个是由很多服务共享的 svchost.exe；</li>
+<li><strong>Win XP</strong>：最少 4 个，分别启动四个服务组；</li>
+<li><strong>Win 10</strong>：多个 svchost.exe 进程。</li>
+</ul>
+<p>问：为什么要启动一大堆的 svchost.exe 进程，在一个 svchost.exe 进程中运行服务岂不是很清爽？？<br>答：你买基金会把所有的钱投在同一个行业上么？同理，微软为了保持系统的稳定性，将不同的服务注入到多个 svchost.exe 进程中，就是为了防止单个服务进程奔溃而导致所有的服务都挂掉。</p>
+<h1 id="二、svchost-exe-的启动机制"><a href="#二、svchost-exe-的启动机制" class="headerlink" title="二、svchost.exe 的启动机制"></a><strong>二、svchost.exe 的启动机制</strong></h1><p>那 svchost.exe 作为一个共享进程，是怎么实现在系统启动时将各个服务启动的呢？<br>答案就是“注册表”！<br>与 svchost.exe 相关的注册表主要有两个：一个记录服务组的包含关系，另一个记录具体服务的细节信息。</p>
+<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs livescript"><span class="hljs-comment"># 服务组</span><br>HKEY_LOCAL_MACHINE<span class="hljs-string">\SOFTWARE\Microsoft\Windows</span> NT<span class="hljs-string">\CurrentVersion\SvcHost</span><br><br><span class="hljs-comment"># 服务</span><br>HKEY_LOCAL_MACHINE<span class="hljs-string">\SYSTEM\CurrentControlSet\Services</span><br></code></pre></td></tr></table></figure>
+<p>Svchost 注册表项对服务进行分组管理，只要是需要 svchost.exe 去启动的服务，都要放在这里。<br>系统启动后 svchost.exe 首先根据这里的键值来管理 DLL 的加载，这里的每一个键值同时也对应着一个 svchost.exe 进程，也就是同组服务共用一个 svchost.exe 进程。（注意这里的服务组不会一次性全部加载，而是根据需要加载）。<br><img   class="lazyload" data-original="https://cdn.nlark.com/yuque/0/2022/png/2316597/1650779822398-bc6c1fcc-3f0b-46a3-99d1-51ae4cb5b575.png#crop=0&crop=0&crop=1&crop=1&id=kjYVI&originHeight=1340&originWidth=2170&originalType=binary&ratio=1&rotation=0&showTitle=false&status=done&style=none&title=" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" ><br>当加载组中具体的某个服务时，svchost.exe 则会根据 Service注册表项中对应的服务项读取服务的详细信息。<br><img   class="lazyload" data-original="https://cdn.nlark.com/yuque/0/2022/png/2316597/1650779823069-200b0876-c351-4c57-948c-08858f0856c1.png#crop=0&crop=0&crop=1&crop=1&id=jdJyO&originHeight=1540&originWidth=2148&originalType=binary&ratio=1&rotation=0&showTitle=false&status=done&style=none&title=" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" ><br>我们前面说过，系统服务是以动态链接库（dll）的形式实现的，因此，在“服务”注册表项中，以“RpcSs”服务为例，我们可以看到在“ImagePath”键中指定了此服务通过 svchost.exe 启动，那 svchost.exe 在执行时具体去哪里找实现这个服务的 dll 文件呢？答案就在该服务的子项“Parameters”的“ServiceDll”键值中记录。<br><img   class="lazyload" data-original="https://cdn.nlark.com/yuque/0/2022/png/2316597/1650779823962-adad2dc1-e35c-4872-9369-e856c8a5536e.png#crop=0&crop=0&crop=1&crop=1&id=Egzx9&originHeight=772&originWidth=2856&originalType=binary&ratio=1&rotation=0&showTitle=false&status=done&style=none&title=" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" ><br><img   class="lazyload" data-original="https://cdn.nlark.com/yuque/0/2022/png/2316597/1650779824527-a3f79954-d110-4f9d-a723-cf111fec8663.png#crop=0&crop=0&crop=1&crop=1&id=doW4X&originHeight=426&originWidth=2284&originalType=binary&ratio=1&rotation=0&showTitle=false&status=done&style=none&title=" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" ><br>至此，Svchost.exe 找到了要加载的服务的 DLL 文件位置，然后加载运行，一个服务的启动就完成了。</p>
+<p><strong>注意</strong>：在启动一个 svchost.exe 负责的服务时，服务管理器如果遇到可执行程序内容 ImagePath 已经存在于服务管理器的映象库中，就不在启动第2个 svchost.exe 进程，而是直接启动服务。这样就实现了多个服务共享一个svchost进程。</p>
+<h2 id="svchost-exe-参数"><a href="#svchost-exe-参数" class="headerlink" title="svchost.exe 参数"></a><strong>svchost.exe 参数</strong></h2><p>在分析 svchost.exe 进程时，由于进程名都一样，直观看起来并没有什么大的区别，这时候我们可以选择显示命令行“Commandline”字段（也就是上面 services注册表项中的“ImagePath”），通过它的执行参数来进行区分，在查看命令行参数时，我们最常见的主要有以下三个参数：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs awk">-k <span class="hljs-regexp">//</span> 指定服务组，在指定注册表中寻找该服务组，并加载该组中引用的每个服务<br>-s <span class="hljs-regexp">//</span> 指定服务，从指定的服务组中启动该服务<br>-p <span class="hljs-regexp">//</span> Windows10 新增的 ACG（任意代码防护）安全机制，强制执行以下策略来保护进程：<br>     <span class="hljs-regexp">//</span> BinarySignaturePolicy：签名校验策略，阻止未（经过微软）签名的模块加载<br>     <span class="hljs-regexp">//</span> DynamicCodePolicy：进程动态代码策略，阻止进程生成动态代码或修改现有的可执行代码<br>     <span class="hljs-regexp">//</span> ExtensionPointDisablePolicy：扩展点禁用策略，阻止使用某些内置的第三方扩展点<br></code></pre></td></tr></table></figure>
+<p><img   class="lazyload" data-original="https://cdn.nlark.com/yuque/0/2022/png/2316597/1650779825067-8f3edfd7-f3da-4551-bc97-d6dae15ca18b.png#crop=0&crop=0&crop=1&crop=1&id=RjSGg&originHeight=766&originWidth=2392&originalType=binary&ratio=1&rotation=0&showTitle=false&status=done&style=none&title=" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" ></p>
+<h1 id="三、各阶选手是如何利用的svchost的"><a href="#三、各阶选手是如何利用的svchost的" class="headerlink" title="三、各阶选手是如何利用的svchost的"></a><strong>三、</strong>各阶选手是如何利用的<strong>svchost的</strong></h1><p><strong>用户视角</strong>：svchost.exe 作为一个系统进程，伴随着系统的运行而运行，托管着众多的功能服务为系统正常运转提供支撑，普通用户自然也不敢对这个进程怎么滴！<br><strong>黑客视角</strong>：能把自己伪装成系统进程，还能伴随着系统启动而自动运行，还不容易被发现，发现了也轻易不敢把我怎么滴，这不就是我想要的么～～～</p>
+<h2 id="青铜选手"><a href="#青铜选手" class="headerlink" title="青铜选手"></a><strong>青铜选手</strong></h2><p><strong>假装自己就是 svchost</strong><br>这类手法比较低级，很容易被分析人员识破，算是上古时期的利用手法了，现在偶尔也能碰到。主要通过名称或者路径混淆来伪装自己：一种是将与“svchost.exe”相似名称的木马文件放置在系统路径下；另一种是在其他系统路径下放置恶意的“svchost.exe”文件。<br>务必要牢记 svchost.exe 在系统磁盘上的两个路径，如果出现在其他地方就要注意了。</p>
+<figure class="highlight mel"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs mel"># 环境变量 %systemroot% 为系统根目录，一般为 “C:\Windows”，可以通过 set 命令查看<br>%systemroot%\System32\svchost.exe<br>%systemroot%\Syswow64\svchost.exe（<span class="hljs-number">32</span>位）<br></code></pre></td></tr></table></figure>
+<p>⚠️ 利用名称混淆伪装，假装自己是 svchost.exe 进程，像这样的：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs stylus">svch0st<span class="hljs-selector-class">.exe</span><br>svchsot<span class="hljs-selector-class">.exe</span><br>scvhost<span class="hljs-selector-class">.exe</span><br>scvh0st<span class="hljs-selector-class">.exe</span><br>svhost<span class="hljs-selector-class">.exe</span><br>svchosl<span class="hljs-selector-class">.exe</span><br>...<br></code></pre></td></tr></table></figure>
+<p>⚠️ 利用系统路径以外的目录存放恶意 svchost.exe 执行文件，假装自己是系统文件，像这样的：</p>
+<figure class="highlight avrasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs avrasm"><span class="hljs-symbol">C:</span>\SysDayN6\svchost.exe<br><span class="hljs-symbol">C:</span>\Syswm1i\svchost.exe<br><span class="hljs-symbol">C:</span>\SysAd5D\svchost.exe<br><span class="hljs-symbol">C:</span>\SysWsj7\svchost.exe<br><span class="hljs-symbol">C:</span>\windows\system32wins\svchost.exe<br>...<br></code></pre></td></tr></table></figure>
+<h2 id="黄金选手"><a href="#黄金选手" class="headerlink" title="黄金选手"></a><strong>黄金选手</strong></h2><p><strong>通过服务自启动实现木马驻留与隐藏</strong><br>我们了解了服务和 svchost.exe 的原理，那怎么去创建一个 svchost.exe 启动服务也就简单了，这也是很多木马作者常用的一种权限维持手段：<strong>创建自启动服务</strong>。</p>
+<ol>
+<li>在 Service 注册表项中注册服务的基本信息，如：Description、Displayname、ImagePath、Type、Start 等，以及设置 Servicedll 项指定后门 DLL 文件的位置；</li>
+<li>在 svchost 注册表项中将要启动的后门服务放置到现有服务组中或者新建一个服务组；</li>
+<li>编写实现恶意功能的 dll 文件，封装服务所需的 ServiceMain 导出函数；</li>
+<li>将上述过程封装在一个 .exe 的可执行文件中，即完成了一个通过服务驻留的木马。</li>
+</ol>
+<p>当然，每个能制作木马的作者都有一颗聪慧的头脑，怎么会如此按部就班呢？他们还可以这样：</p>
+<ul>
+<li>在现有的服务组中加入后门服务</li>
+<li>替换系统中已有服务的 DLL 文件</li>
+<li>利用已经在系统中，但没有被安装使用的服务，修改其 DLL 指向与启动方式</li>
+<li>寻找对系统影响较小的服务，篡改其 DLL 指向</li>
+</ul>
+<p><img   class="lazyload" data-original="https://cdn.nlark.com/yuque/0/2022/png/2316597/1650779825589-294b7b4e-834d-4d29-b453-c4c05f6e619c.png#crop=0&crop=0&crop=1&crop=1&id=XBUok&originHeight=1764&originWidth=3130&originalType=binary&ratio=1&rotation=0&showTitle=false&status=done&style=none&title=" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" ><br>我们前面也有提到，并不是所有的服务都会通过 svchost.exe 调用实现，以 Metasploit 为例：在获取到目标主机的 Meterpreter 之后，可以使用“run metsvc”命令在目标主机上注册一个名为 metsvc 的服务，注册的方式则是直接将恶意的可执行文件直接注册为服务。<br><img   class="lazyload" data-original="https://cdn.nlark.com/yuque/0/2022/png/2316597/1650779826153-bb797c8e-2b2f-4c42-95ab-3fc96aa3475e.png#crop=0&crop=0&crop=1&crop=1&id=zKxzJ&originHeight=339&originWidth=953&originalType=binary&ratio=1&rotation=0&showTitle=false&status=done&style=none&title=" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" ></p>
+<h2 id="钻石选手"><a href="#钻石选手" class="headerlink" title="钻石选手"></a><strong>钻石选手</strong></h2><p><strong>dll 劫持&#x2F;注入</strong><br>对于 dll 劫持和注入，算是属于比较高端一点的技术了，区别就是一个主动一个被动：</p>
+<ul>
+<li>dll 劫持：程序在启动时<strong>主动加载</strong>事先放置好的恶意 dll（圈里常说的“白+黑”技术其实就是 dll 劫持技术，让一个正常的应用程序在启动过程中加载事先放置的恶意 dll）。</li>
+<li>dll 注入：将一个恶意 dll 放进正在运行的进程的内存空间中，让这个 dll 成为他的一部分，创建定时的线程<strong>被动运行</strong> dll 。</li>
+</ul>
+<p>综上，dll 劫持和注入都是让进程运行一个不属于它的 dll。而进程实际是一个容器，任何时候一个进程加载或卸载库，会创建一个新线程，执行具体的任务都是由线程来完成。我们不难得出，一个被 dll 劫持&#x2F;注入的进程，肯定会增加一个子线程来去执行这个恶意的 dll。<br>那同样，作为系统进程的 svchost.exe，也是被黑客注入的目标之一。其实微软在 Windows Vista 开始就对系统进行了会话分离，将系统服务运行在 session 0 会话中，应用程序则使用单独的会话，甚至在 Win10 开始加入了 ACG 策略，一定程度上保证了系统进程的安全，不那么容易被注入恶意 dll，但这同样难不倒聪明的黑客！</p>
+<h2 id="星耀选手"><a href="#星耀选手" class="headerlink" title="星耀选手"></a><strong>星耀选手</strong></h2><p><strong>傀儡进程</strong><br>通过安装服务或劫持 dll 的方式来执行木马，由于没有签名，很容易被发现。于是，聪明的黑客又想到了可以将恶意代码直接拷贝到正常进程的内存中，让进程去执行。<br>广义上来讲，傀儡进程是一种进程伪装手法，通过进程替换（Process replacement）技术来实现，即攻击者在系统上挂起一个正常的进程，然后重写该进程内存空间，填充 shellcode 或其他可移植 PE，实现正常进程执行恶意代码的目的。但是要让这个进程去运行被写入的恶意代码，就要修改进程的执行流程，将入口点指向恶意代码。所以，傀儡进程的本质就是替换进程的主线程，进程原有的功能会被抹去，只用于执行恶意代码，（有的同学可能会认为 DLL 注入也属于傀儡进程的实现，但其实这两种技术本质上是存在区别的，DLL 注入技术一般不会影响目标进程的执行流程和原有功能）<br>因此，对于傀儡进程而言，看起来和正常的进程没什么区别，但是它的内在早已经不是原来的他了，其真实要完成的任务已经被替换了。<br>关于如何利用 svchost.exe 创建傀儡进程的技术细节，可以参考下看雪大佬的文章：<a target="_blank" rel="noopener" href="https://bbs.pediy.com/thread-170530.htm">另类注入 傀儡进程测试</a><br>针对 DLL 劫持&#x2F;注入和傀儡进程的技术细节本文不做深入探讨，后续会针对性发表相关技术文章。</p>
+<h2 id="王者选手"><a href="#王者选手" class="headerlink" title="王者选手"></a><strong>王者选手</strong></h2><p>太 Low 了，不会真的有人不会 Rootkit 吧～～～<br><img   class="lazyload" data-original="https://cdn.nlark.com/yuque/0/2022/png/2316597/1650779826613-69082c3d-0233-450f-929a-0ff5942ca028.png#crop=0&crop=0&crop=1&crop=1&height=200&id=KjNpd&originHeight=234&originWidth=232&originalType=binary&ratio=1&rotation=0&showTitle=false&status=done&style=none&title=&width=198" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" ></p>
+<h1 id="四、怎么揪出-svchost-背后的恶人"><a href="#四、怎么揪出-svchost-背后的恶人" class="headerlink" title="四、怎么揪出 svchost 背后的恶人"></a><strong>四、怎么揪出 svchost 背后的恶人</strong></h1><p>魔高一尺，道高一丈，面对不同的利用手段，分析人员也得有自己的一套战技法or技战法！</p>
+<h2 id="1、定位进程"><a href="#1、定位进程" class="headerlink" title="1、定位进程"></a><strong>1、定位进程</strong></h2><p>要排查一个运行中的恶意程序，首先得定位到恶意进程，一般的方法都是通过网络行为来定位是哪个程序在发起恶意请求，比如监控域名请求和TCP会话，有很多工具去实现，这里就不详细解释。</p>
+<ul>
+<li>netstat：通过查看已经建立连接的 TCP 会话定位</li>
+<li>火绒剑：通过监控进程网络动作定位</li>
+<li>ProcessMonitor：通过捕获网络日志定位</li>
+<li>DNSQuerySniffer：通过捕获 DNS 请求源端口，结合 Monitor 定位</li>
+<li>主动修改恶意域名指向，通过捕获网络连接定位</li>
+<li>…</li>
+</ul>
+<p><img   class="lazyload" data-original="https://cdn.nlark.com/yuque/0/2022/png/2316597/1650779827268-acffebb6-41a0-44b8-8fe4-5007f33163cf.png#crop=0&crop=0&crop=1&crop=1&id=qryQa&originHeight=289&originWidth=682&originalType=binary&ratio=1&rotation=0&showTitle=false&status=done&style=none&title=" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" ><br><em>通过火绒剑进程监控发现 svchost.exe 进程请求恶意域名</em><br>其次，还可以使用一些内存字符串搜索工具，来定位存在恶意域名&#x2F;IP字符的可疑进程。（此类工具可能会定位到其他无关进程，需要对进程有一定的辨别能力）<br><img   class="lazyload" data-original="https://cdn.nlark.com/yuque/0/2022/png/2316597/1650779828060-f335e000-6ab2-42e9-96a2-472717f57ca2.png#crop=0&crop=0&crop=1&crop=1&id=HN8to&originHeight=1440&originWidth=2485&originalType=binary&ratio=1&rotation=0&showTitle=false&status=done&style=none&title=" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" ><br><em>通过微步在线威胁检索工具发现两个可疑的 svchost 进程存在恶意 IOC 字符串</em></p>
+<h3 id="Tips："><a href="#Tips：" class="headerlink" title="Tips："></a><strong>Tips：</strong></h3><p>在日常分析中，我们经常会通过抓取恶意域名请求来定位恶意进程，如果定位最终指向 svchost.exe 进程，而我们在查看进程命令行时，可以看到svchost -k NetworkService -p -s Dnscache 这样的参数，其实这是系统的 DNS 缓存机制：大部分应用程序进程进行域名解析时，会通过 RPC 传递到 Dnscache 服务进行 DNS 缓存（ipconfig &#x2F;displaydns的结果就是他的功劳），而这两个服务都是通过 svchost.exe 启动的，因此并不代表该进程就是恶意进程。<br><img   class="lazyload" data-original="https://cdn.nlark.com/yuque/0/2022/png/2316597/1650779828825-29376448-27ce-41ec-b451-302520813e8d.png#crop=0&crop=0&crop=1&crop=1&id=ZplJE&originHeight=561&originWidth=1006&originalType=binary&ratio=1&rotation=0&showTitle=false&status=done&style=none&title=" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" ></p>
+<h2 id="2、火眼金睛"><a href="#2、火眼金睛" class="headerlink" title="2、火眼金睛"></a><strong>2、火眼金睛</strong></h2><p>对付一些仿冒 svchost.exe 的恶意程序，我们可以通过 tasklist 命令来查看每个 svchost.exe 启动的服务，如果某个 svchost.exe 对应的服务显示“暂缺”，就说明该进程所提供服务对应的 dll 存在缺失，这种情况说明该进程大概率就不是给我们系统提供服务的进程，只需根据 PID 对应具体的进程信息，查看可执行文件路径，然后通过沙箱等方式判断是否为恶意程序。</p>
+<figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs 1c">tasklist /svc <span class="hljs-string">| findstr &quot;</span>svchost<span class="hljs-string">&quot;</span><br></code></pre></td></tr></table></figure>
+<p><img   class="lazyload" data-original="https://cdn.nlark.com/yuque/0/2022/png/2316597/1650779829225-7e4116d9-2e7f-4d78-b095-dead0d287303.png#crop=0&crop=0&crop=1&crop=1&id=pt7tW&originHeight=309&originWidth=670&originalType=binary&ratio=1&rotation=0&showTitle=false&status=done&style=none&title=" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" ><br><img   class="lazyload" data-original="https://cdn.nlark.com/yuque/0/2022/png/2316597/1650779829737-0d85671b-604a-4067-a91c-de9db963324c.png#crop=0&crop=0&crop=1&crop=1&id=XSOSy&originHeight=248&originWidth=1260&originalType=binary&ratio=1&rotation=0&showTitle=false&status=done&style=none&title=" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" ><br><em>根据进程 ID 发现非 Syswow64 目录下的 32 位 svchost.exe 程序</em><br>面对这类最基本的伪装技术，能做的就是擦亮眼睛，牢记正版 svchost.exe 的名称及路径，对其他一切“易容者”都保持怀疑态度。<br>通过任务管理器、ProcessExplorer 等进程管理工具，对名称、路径、描述信息、启动时间、签名等字段进行简单分析：</p>
+<ul>
+<li>非系统路径下的 svchost.exe 文件</li>
+<li>父进程非 services.exe 的 svchost.exe 进程</li>
+<li>形似 svchost.exe 的进程</li>
+<li>没有签名的进程文件</li>
+<li>描述、公司等信息为空的进程文件</li>
+<li>启动时间与其他大部分 svchost.exe 滞后的进程文件</li>
+<li>…</li>
+</ul>
+<p>定位到可疑的执行程序后，最简单的判断方法就是直接上传<a target="_blank" rel="noopener" href="https://s.threatbook.cn/">微步云沙箱</a>或者 <a target="_blank" rel="noopener" href="https://www.virustotal.com/gui/home/upload">Virustotal</a> 一把梭，自会见分晓～</p>
+<h2 id="3、服务分析"><a href="#3、服务分析" class="headerlink" title="3、服务分析"></a><strong>3、服务分析</strong></h2><p>对付一些利用服务自启动的恶意程序，我们可以使用系统自带的服务管理器或第三方工具对服务进行分析：</p>
+<ul>
+<li>服务名称为不可读的随机字符串</li>
+<li>没有描述信息的服务</li>
+<li>注册表修改时间与其他大部分服务滞后的服务</li>
+<li>启动文件不在系统目录下的服务（如：Temp、Desktop等目录）</li>
+<li>没有数字签名的服务（Power Tool 等工具可以直接过滤非微软服并校验签名）</li>
+<li>通过火绒剑等工具查看服务的导入模块，是否存在没有描述信息或签名的 dll 文件</li>
+<li>查看 svchosts 注册表项，是否存在未知的服务组，或已有服务组中是否存在可疑的服务</li>
+<li>查看 services 注册表项，是否存在随机命名的服务</li>
+<li>。。。</li>
+</ul>
+<p><img   class="lazyload" data-original="https://cdn.nlark.com/yuque/0/2022/png/2316597/1650779830275-5931965a-d607-4b1b-96d1-b88b15a2f4df.png#crop=0&crop=0&crop=1&crop=1&id=VpmJd&originHeight=289&originWidth=1660&originalType=binary&ratio=1&rotation=0&showTitle=false&status=done&style=none&title=" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" ><br><em>通过Power Tool 发现无签名、无描述信息、启动目录可疑的 Metasploit 后门服务</em></p>
+<h2 id="4、进程分析"><a href="#4、进程分析" class="headerlink" title="4、进程分析"></a><strong>4、进程分析</strong></h2><p>针对 dll 注入这类攻击手法，我们要了解 dll 注入的本质：在目标进程中增加一个线程，通过 LoadLlibrary 等方式来载入目标 dll。所以，我们可以着重从可疑进程的线程入手，查看是否存在没有描述及模块信息的可疑的线程。<br><img   class="lazyload" data-original="https://cdn.nlark.com/yuque/0/2022/png/2316597/1650779830736-ef168557-e215-47d9-8d23-5a1ce454d41c.png#crop=0&crop=0&crop=1&crop=1&id=fQWYK&originHeight=508&originWidth=1012&originalType=binary&ratio=1&rotation=0&showTitle=false&status=done&style=none&title=" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" ><br>根据可疑线程的内存地址，可以进一步查看其内存片段，在火绒剑中，如果内存片段存在异常，会直接标红显示，针对异常的内存片段可继续查看其内存字符串或者转储分析，有可能就会发现惊喜！<br><img   class="lazyload" data-original="https://cdn.nlark.com/yuque/0/2022/png/2316597/1650779831231-ddfe46cb-67e1-4ac4-8bf9-8f340593f08a.png#crop=0&crop=0&crop=1&crop=1&id=CIhns&originHeight=268&originWidth=1004&originalType=binary&ratio=1&rotation=0&showTitle=false&status=done&style=none&title=" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" ><br><img   class="lazyload" data-original="https://cdn.nlark.com/yuque/0/2022/png/2316597/1650779831809-8e02d2c2-1b7c-4cfe-b031-edc3e2dc5d74.png#crop=0&crop=0&crop=1&crop=1&id=Qo8L1&originHeight=496&originWidth=924&originalType=binary&ratio=1&rotation=0&showTitle=false&status=done&style=none&title=" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" ><br><em>异常的内存片段中发现可疑的 powershell 代码</em></p>
+<p>除此之外，我们还可以通过 PEView 等工具查看可疑进程磁盘镜像文件的导入表，记录其导入的 DLL 文件，然后使用进程分析工具查看该进程已装载的模块信息，与导入表 DLL 比较，如果存在多余的 DLL 文件，就需要注意了！</p>
+<h2 id="5、内存分析"><a href="#5、内存分析" class="headerlink" title="5、内存分析"></a><strong>5、内存分析</strong></h2><p>对于确认存在问题的恶意 svchost.exe 进程，如果没有发现加载可疑的 DLL 及可疑服务驻留，那么它可能就是一个傀儡进程，我们可以使用 ProcessExplorer 来对比查看其可执行文件字符串和内存字符串是否存在巨大差异，一般两者的内容是相同的，如果这两个字符串列表有很大差异，那么就很大概率说明发生了进程替换。<br><img   class="lazyload" data-original="https://cdn.nlark.com/yuque/0/2022/png/2316597/1650779832378-619a07f6-1d0f-46a8-9cd9-59c52e8f324a.png#crop=0&crop=0&crop=1&crop=1&id=az54V&originHeight=664&originWidth=1432&originalType=binary&ratio=1&rotation=0&showTitle=false&status=done&style=none&title=" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" ><br><em>同一个 svchost.exe 进程，磁盘镜像字符串和内存镜像字符串存在差异</em><br>确认了异常，我们可以检查其内存字符串，是否存在可疑的域名、IP 或其他可疑字符串，如：文件路径、注册表等。<br><img   class="lazyload" data-original="https://cdn.nlark.com/yuque/0/2022/png/2316597/1650779833336-15d387aa-3f46-4d37-a29f-a6973f23924e.png#crop=0&crop=0&crop=1&crop=1&id=AGWvY&originHeight=596&originWidth=513&originalType=binary&ratio=1&rotation=0&showTitle=false&status=done&style=none&title=" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" ><br><em>查看 svchost.exe 进程内存，发现 IOC 字符串</em><br>其次，我们可以进一步对该进程进行内存转储 dump 然后进行分析，常用的任务管理器、火绒剑和 Prodump 等工具都可以执行内存转储操作，这类 Dump 可以将目标进程的数据区、堆栈信息以及线程等信息保存到 .dmp 文件，针对转储的 .dmp 文件，最直观的方法就是使用 windbg 等工具直接查看其线程、句柄以及字符串等信息。<br>更进一步，还可以使用 PEDump 等工具将目标进程加载的文件进行转储，这类 Dump 的结果是 PE 文件，可以使用 IDA 或 OD 等工具深入分析，尝试提取其注入的 PE 文件或 shellcode。<br><img   class="lazyload" data-original="https://cdn.nlark.com/yuque/0/2022/png/2316597/1650779834074-fbdd6f59-cb04-4ee1-91ff-033b45dc9147.png#crop=0&crop=0&crop=1&crop=1&id=ZN1Rx&originHeight=357&originWidth=596&originalType=binary&ratio=1&rotation=0&showTitle=false&status=done&style=none&title=" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" ><br><em>dump 出 svchost.exe 内存分析发现可疑 Wechatweb.exe 程序</em></p>
+<h3 id="Tips：-1"><a href="#Tips：-1" class="headerlink" title="Tips："></a><strong>Tips：</strong></h3><p>进程替换技术实现的傀儡进程为恶意代码提供了和其他进程一样的特权，恶意进程看起来就是一个合法进程，但是它在内存中的镜像会和磁盘上的不一样，而我们使用的ProcessExplorer等工具来验证签名是对磁盘上的文件进行验证，所以一个傀儡 svchost.exe 进程可以通过微软的验证，但他实际上是个恶意程序。</p>
+<h1 id="五、最后"><a href="#五、最后" class="headerlink" title="五、最后"></a><strong>五、最后</strong></h1><p>本篇文章旨在带大部分入门应急响应的小伙伴了解 svchost.exe 进程及背后的机制，以及在应急响应实战中如何分析的一些小技巧，希望能对大家带来帮助。<br>在真实的应急场景中，我们不能将眼光只局限于 svchost.exe 这个进程，面对其他进程的 dll 注入、dll 劫持、白加黑等利用手法，我们同样可以使用这些技巧进行分析，后续我们会根据真实的病毒样本或应急案例带大家进行实际的分析运用，敬请期待～～～<br><img   class="lazyload" data-original="https://cdn.nlark.com/yuque/0/2022/png/2316597/1650779835550-23777ef2-d43e-4205-948a-1f3595c4eb8f.png#crop=0&crop=0&crop=1&crop=1&height=224&id=zhURd&originHeight=300&originWidth=300&originalType=binary&ratio=1&rotation=0&showTitle=false&status=done&style=none&title=&width=224" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" ><br>各位看官朋友们，今天的内容就到这里了，如果觉得不错还请动动小手点赞收藏关注+转发～<br><img   class="lazyload" data-original="https://cdn.nlark.com/yuque/0/2022/png/2316597/1650779836465-cd269dcb-a343-4b11-bf5e-6efc610eccda.png#crop=0&crop=0&crop=1&crop=1&id=Zr7hY&originHeight=228&originWidth=222&originalType=binary&ratio=1&rotation=0&showTitle=false&status=done&style=none&title=" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" ></p>
+
+      </section>
+      <section class="extra">
+        
+          <ul class="copyright">
+  
+    <li><strong>本文作者：</strong>K1ng</li>
+    <li><strong>本文链接：</strong><a href="http://blog.seck1ng.com/2022/05/20/svchost%20%E7%9A%84%E7%A5%9E%E7%A7%98%E9%9D%A2%E7%BA%B1/index.html" title="http:&#x2F;&#x2F;blog.seck1ng.com&#x2F;2022&#x2F;05&#x2F;20&#x2F;svchost%20%E7%9A%84%E7%A5%9E%E7%A7%98%E9%9D%A2%E7%BA%B1&#x2F;index.html">http:&#x2F;&#x2F;blog.seck1ng.com&#x2F;2022&#x2F;05&#x2F;20&#x2F;svchost%20%E7%9A%84%E7%A5%9E%E7%A7%98%E9%9D%A2%E7%BA%B1&#x2F;index.html</a></li>
+    <li><strong>版权声明：</strong>本博客所有文章均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" title="BY-NC-SA" target="_blank" rel="noopener">BY-NC-SA</a> 许可协议，转载请注明出处！</li>
+  
+</ul>
+        
+        
+          <section class="donate">
+  <div id="qrcode-donate">
+    <img   class="lazyload" data-original="https://pic.izhaoo.com/alipay.jpg" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" >
+  </div>
+  <div class="icon">
+    <a href="javascript:;" id="alipay"><i class="iconfont iconalipay"></i></a>
+    <a href="javascript:;" id="wechat"><i class="iconfont iconwechat-fill"></i></a>
+  </div>
+</section>
+        
+        
+        
+  <nav class="nav">
+    <a></a>
+    <a href="/2022/03/09/Exchange%20%E6%94%BB%E5%87%BB%E9%93%BE/">Exchange Proxyshell<i class="iconfont iconright"></i></a>
+  </nav>
+
+      </section>
+      
+    </section>
+  </div>
+</article></div>
+      <div class="col-xl-3">
+        
+          
+  <aside class="toc-wrap">
+    <h3 class="toc-title">文章目录：</h3>
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5%E4%BB%8B%E7%BB%8D"><span class="toc-text">一、基础概念介绍</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%8D%E5%8A%A1"><span class="toc-text">服务</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Svchost-exe"><span class="toc-text">Svchost.exe</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%8C%E3%80%81svchost-exe-%E7%9A%84%E5%90%AF%E5%8A%A8%E6%9C%BA%E5%88%B6"><span class="toc-text">二、svchost.exe 的启动机制</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#svchost-exe-%E5%8F%82%E6%95%B0"><span class="toc-text">svchost.exe 参数</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E5%90%84%E9%98%B6%E9%80%89%E6%89%8B%E6%98%AF%E5%A6%82%E4%BD%95%E5%88%A9%E7%94%A8%E7%9A%84svchost%E7%9A%84"><span class="toc-text">三、各阶选手是如何利用的svchost的</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9D%92%E9%93%9C%E9%80%89%E6%89%8B"><span class="toc-text">青铜选手</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%BB%84%E9%87%91%E9%80%89%E6%89%8B"><span class="toc-text">黄金选手</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%92%BB%E7%9F%B3%E9%80%89%E6%89%8B"><span class="toc-text">钻石选手</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%98%9F%E8%80%80%E9%80%89%E6%89%8B"><span class="toc-text">星耀选手</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8E%8B%E8%80%85%E9%80%89%E6%89%8B"><span class="toc-text">王者选手</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E6%80%8E%E4%B9%88%E6%8F%AA%E5%87%BA-svchost-%E8%83%8C%E5%90%8E%E7%9A%84%E6%81%B6%E4%BA%BA"><span class="toc-text">四、怎么揪出 svchost 背后的恶人</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1%E3%80%81%E5%AE%9A%E4%BD%8D%E8%BF%9B%E7%A8%8B"><span class="toc-text">1、定位进程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Tips%EF%BC%9A"><span class="toc-text">Tips：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2%E3%80%81%E7%81%AB%E7%9C%BC%E9%87%91%E7%9D%9B"><span class="toc-text">2、火眼金睛</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3%E3%80%81%E6%9C%8D%E5%8A%A1%E5%88%86%E6%9E%90"><span class="toc-text">3、服务分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4%E3%80%81%E8%BF%9B%E7%A8%8B%E5%88%86%E6%9E%90"><span class="toc-text">4、进程分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5%E3%80%81%E5%86%85%E5%AD%98%E5%88%86%E6%9E%90"><span class="toc-text">5、内存分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Tips%EF%BC%9A-1"><span class="toc-text">Tips：</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E6%9C%80%E5%90%8E"><span class="toc-text">五、最后</span></a></li></ol>
+  </aside>
+
+        
+      </div>
+    </div>
+  </div>
+</main>
+  
+
+<footer class="footer">
+  <div class="footer-social"><a 
+        href="tencent://message/?Menu=yes&uin=894519210 "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color= '#12B7F5'" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  iconQQ "></i>
+      </a><a 
+        href="javascript:; "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color= '#09BB07'" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  iconwechat-fill "></i>
+      </a><a 
+        href="https://www.instagram.com/izhaoo/ "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color= '#DA2E76'" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  iconinstagram "></i>
+      </a><a 
+        href="https://github.com/zhaoo "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color= '#9f7be1'" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  icongithub-fill "></i>
+      </a><a 
+        href="mailto:izhaoo@163.com "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color=#FF3B00" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  iconmail"></i>
+      </a></div>
+  
+    <div class="footer-copyright"><p>Powered by <a target="_blank" href="https://hexo.io">Hexo</a>  |  Theme - <a target="_blank" href="https://github.com/izhaoo/hexo-theme-zhaoo">zhaoo</a></p></div>
+  
+</footer>
+  
+      <div class="fab fab-plus">
+    <i class="iconfont iconplus"></i>
+  </div>
+  
+  
+  
+  <div class="fab fab-up">
+    <i class="iconfont iconcaret-up"></i>
+  </div>
+  
+  
+  
+    
+<script src="/js/color-mode.js"></script>
+
+  
+  
+</body>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+
+
+
+  
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery.lazyload/1.9.1/jquery.lazyload.min.js"></script>
+
+
+
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+
+
+
+
+
+
+  
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery.qrcode/1.0/jquery.qrcode.min.js"></script>
+
+
+
+
+<script src="/js/utils.js"></script>
+<script src="/js/script.js"></script>
+
+
+
+
+
+
+
+  <script>
+    (function () {
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+      } else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+      }
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+</html>
