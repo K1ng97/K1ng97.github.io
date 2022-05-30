@@ -200,7 +200,7 @@
     <div class="head-info">
       <span class="post-info-item"><i class="iconfont iconcalendar"></i>March 09, 2022</span>
       
-      <span class="post-info-item"><i class="iconfont iconfont-size"></i>48215</span>
+      <span class="post-info-item"><i class="iconfont iconfont-size"></i>48206</span>
     </div>
   </div>
 </section>
@@ -247,7 +247,7 @@
 <li>利用 Exchange Powershell 命令 New-ManagementRoleAssignment 授予我们自己的邮箱导入导出角色，New-MailboxExportRequest 将 ASPX Webshell 文件写入本地 UNC 路径；</li>
 <li>获取到 webshell。</li>
 </ol>
-<p><img    class="lazyload" data-original="https://cdn.nlark.com/yuque/0/2021/png/1618485/1630483127821-ee5ade99-cae8-4b37-940f-e502e7a68fda.png#clientId=u572e2de2-18e4-4&from=paste&id=ue5b8bdb0&margin=%5Bobject%20Object%5D&name=image.png&originHeight=430&originWidth=1516&originalType=binary&ratio=1&size=158042&status=done&style=none&taskId=u169389c9-3fd5-470f-9d73-b892c3efb4c" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="   ><span class="image-caption">image.png</span></p>
+<p><img   class="lazyload" data-original="https://cdn.nlark.com/yuque/0/2021/png/1618485/1630483127821-ee5ade99-cae8-4b37-940f-e502e7a68fda.png#clientId=u572e2de2-18e4-4&from=paste&id=ue5b8bdb0&margin=%5Bobject%20Object%5D&name=image.png&originHeight=430&originWidth=1516&originalType=binary&ratio=1&size=158042&status=done&style=none&taskId=u169389c9-3fd5-470f-9d73-b892c3efb4c" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" ></p>
 <h3 id="（1）漏洞扫描"><a href="#（1）漏洞扫描" class="headerlink" title="（1）漏洞扫描"></a>（1）漏洞扫描</h3><p>测试 payload：</p>
 <figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk">https:<span class="hljs-regexp">//</span>Exchange-server:<span class="hljs-number">443</span><span class="hljs-regexp">/autodiscover/</span>autodiscover.json?@foo.com<span class="hljs-regexp">/mapi/</span>nspi<span class="hljs-regexp">/?&amp;Email=autodiscover/</span>autodiscover.json%<span class="hljs-number">3</span>F@foo.com<br></code></pre></td></tr></table></figure>
 <p>利用 SSRF 漏洞，实际后端访问的请求：</p>
